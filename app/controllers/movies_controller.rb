@@ -8,6 +8,46 @@ class MoviesController < ApplicationController
 
   def index
     @movies = Movie.all
+    @all_ratings = Movie.ratings()
+
+    if params[:ratings] == nil and params[:sorter] == nil
+    	if session[:ratings] != nil and session[:sorter] != nil
+    		flash.keep
+    		redirect_to movies_path :ratings => session[:ratings], :sorter => session[:sorter]
+    	elsif session[:ratings] != nil
+    		flash.keep
+    		redirect_to movies_path :ratings => session[:ratings]
+    	elsif session[:sorter] != nil
+    		flash.keep
+    		redirect_to movies_path :sorter => session[:sorter]
+    	end
+    elsif params[:sorter] != nil
+    	session[:sorter] = params[:sorter]
+    elsif params[:ratings] != nil
+    	session[:ratings] = params[:ratings]
+    end
+
+
+    if params[:ratings].is_a? Hash and params[:ratings] != nil
+    	session[:ratings] = params[:ratings].keys
+    elsif params[:ratings] != nil
+    	session[:ratings] = params[:ratings]
+    elsif session[:ratings] == nil
+     	session[:ratings] = Movie.ratings()
+    end
+
+  #  if params[:sorter] != nil
+ #   	session[:sorter] = params[:sorter]
+#    end
+
+    if  session[:sorter] == 'mtitle'
+	@movies = Movie.find(:all, :conditions => {:rating => session[:ratings]}, :order => :title)
+    elsif session[:sorter] == 'rdate'
+	@movies = Movie.find(:all, :conditions => {:rating => session[:ratings]}, :order => :release_date)
+    else
+    	@movies = Movie.find(:all, :conditions => {:rating => session[:ratings]})
+    end
+
   end
 
   def new
