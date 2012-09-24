@@ -36,9 +36,6 @@ class MoviesController < ApplicationController
      	session[:ratings] = Movie.ratings()
     end
 
-  #  if params[:sorter] != nil
- #   	session[:sorter] = params[:sorter]
-#    end
 
     if  session[:sorter] == 'mtitle'
 	@movies = Movie.find(:all, :conditions => {:rating => session[:ratings]}, :order => :title)
